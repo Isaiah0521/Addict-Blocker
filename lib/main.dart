@@ -44,16 +44,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -61,32 +51,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final int _counter = 0;
+  int _selectedIndex = 0; // Track which tab is selected
 
-  void _incrementCounter() {
+  // List of pages for each tab (Profile page removed)
+  static final List<Widget> _pages = <Widget>[
+    BlockedWebsitesPage(), // Block-list page
+    StrictModePage(), // Strict Mode page
+    ChartPage(), // Chart page
+  ];
+
+  // Handle tab selection
+  void _onItemTapped(int index) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-
-      NavigationBar;
+      _selectedIndex = index;
     });
-  }
-
-  void _navigateToNewPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const NewPage()),
-    );
-  }
-
-  void _navigateToBlockedWebsitesPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const BlockedWebsitesPage()),
-    );
   }
 
   @override
@@ -96,66 +74,45 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Profile icon below the AppBar
-          Align(
-            alignment: Alignment.topRight,
-            child: IconButton(
-              icon: const Icon(Icons.person, size: 32),
-              tooltip: 'Profile',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile Page Coming Soon')),
-                );
-              },
+          // Main page content
+          _pages[_selectedIndex],
+          // Profile icon positioned at the top right, below the app bar
+          Positioned(
+            top: 16, // Adjust as needed for spacing below the app bar
+            right: 16,
+            child: SafeArea(
+              child: IconButton(
+                icon: const Icon(Icons.person, size: 32),
+                tooltip: 'Profile',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfilePage(),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to Block-list page
-                _navigateToBlockedWebsitesPage(context);
-              },
-              child: const Text('Block-list'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StrictModePage(),
-                  ),
-                );
-              },
-              child: const Text('Strict Mode'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ChartPage()),
-                );
-              },
-              child: const Text('Chart'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Add functionality for Profile
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile Page Coming Soon')),
-                );
-              },
-              child: const Text('Profile'),
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 97, 56, 41),
+        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Block-list'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.lock_clock),
+            label: 'Strict Mode',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Chart'),
+        ],
       ),
     );
   }
