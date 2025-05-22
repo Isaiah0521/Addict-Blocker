@@ -4,10 +4,15 @@ import 'Chart_Page.dart';
 import 'Strict_Mode.dart';
 import 'Blocked_list.dart';
 import 'Profile.dart';
+import 'Blocked_Apps.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'visit_data.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(create: (_) => VisitData(), child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Addict-blocker',
+      title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -37,7 +42,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Holy Blocker'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -55,9 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // List of pages for each tab (Profile page removed)
   static final List<Widget> _pages = <Widget>[
-    BlockedWebsitesPage(), // Block-list page
-    StrictModePage(), // Strict Mode page
-    ChartPage(), // Chart page
+    BlockedWebsitesPage(),
+    BlockedAppsPage(), // Add this line
+    StrictModePage(),
+    ChartPage(),
   ];
 
   // Handle tab selection
@@ -108,6 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Block-list'),
           BottomNavigationBarItem(
+            icon: Icon(Icons.block),
+            label: 'Blocked Apps',
+          ), // New tab
+          BottomNavigationBarItem(
             icon: Icon(Icons.lock_clock),
             label: 'Strict Mode',
           ),
@@ -148,6 +158,11 @@ class _BlockedWebsitesPageState extends State<BlockedWebsitesPage> {
     if (_controller.text.isNotEmpty) {
       setState(() {
         _blockedWebsites.add(_controller.text);
+        // Increment visit count for the website
+        Provider.of<VisitData>(
+          context,
+          listen: false,
+        ).addWebsiteVisit('google.com');
         _controller.clear();
       });
     }

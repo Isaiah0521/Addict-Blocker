@@ -1,72 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
+import 'visit_data.dart';
 
 class ChartPage extends StatelessWidget {
-  // Example data: website visit counts
-  final Map<String, int> websiteVisits = {
-    'google.com': 5,
-    'youtube.com': 8,
-    'facebook.com': 3,
-    'twitter.com': 2,
-    'reddit.com': 6,
-  };
-
-  ChartPage({super.key});
+  const ChartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final websites = websiteVisits.keys.toList();
-    final visits = websiteVisits.values.toList();
+    final visitData = Provider.of<VisitData>(context);
+
+    final websites = visitData.websiteVisits.keys.toList();
+    final websiteVisits = visitData.websiteVisits.values.toList();
+
+    final apps = visitData.appVisits.keys.toList();
+    final appVisits = visitData.appVisits.values.toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Relapse Chart')),
+      appBar: AppBar(title: const Text('Visits Chart')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BarChart(
           BarChartData(
             alignment: BarChartAlignment.spaceAround,
-            maxY: (visits.reduce((a, b) => a > b ? a : b) + 2).toDouble(),
-            barTouchData: BarTouchData(enabled: true),
+            maxY:
+                [
+                  ...websiteVisits,
+                  ...appVisits,
+                ].fold<int>(0, (prev, e) => e > prev ? e : prev).toDouble() +
+                2,
+            barGroups: [
+              for (int i = 0; i < websites.length; i++)
+                BarChartGroupData(
+                  x: i,
+                  barRods: [
+                    BarChartRodData(
+                      toY: websiteVisits[i].toDouble(),
+                      color: Colors.blue,
+                      width: 16,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                  showingTooltipIndicators: [0],
+                ),
+              for (int i = 0; i < apps.length; i++)
+                BarChartGroupData(
+                  x: i + websites.length,
+                  barRods: [
+                    BarChartRodData(
+                      toY: appVisits[i].toDouble(),
+                      color: Colors.green,
+                      width: 16,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                  showingTooltipIndicators: [0],
+                ),
+            ],
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
                   getTitlesWidget: (double value, TitleMeta meta) {
-                    final idx = value.toInt();
-                    if (idx < 0 || idx >= websites.length) {
-                      return const SizedBox();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
+                    int idx = value.toInt();
+                    if (idx < websites.length) {
+                      return Text(
                         websites[idx],
                         style: const TextStyle(fontSize: 10),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    );
+                      );
+                    } else if (idx - websites.length < apps.length) {
+                      return Text(
+                        apps[idx - websites.length],
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.green,
+                        ),
+                      );
+                    }
+                    return const Text('');
                   },
-                  interval: 1,
                 ),
               ),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
             ),
+            gridData: FlGridData(show: true),
             borderData: FlBorderData(show: false),
-            barGroups: List.generate(websites.length, (i) {
-              return BarChartGroupData(
-                x: i,
-                barRods: [
-                  BarChartRodData(
-                    toY: visits[i].toDouble(),
-                    color: Colors.blue,
-                    width: 18,
-                  ),
-                ],
-              );
-            }),
           ),
         ),
       ),
