@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'visit_data.dart';
 
 class BlockedAppsPage extends StatefulWidget {
   const BlockedAppsPage({super.key});
@@ -17,10 +15,6 @@ class _BlockedAppsPageState extends State<BlockedAppsPage> {
     if (_controller.text.isNotEmpty) {
       setState(() {
         _blockedApps.add(_controller.text);
-        Provider.of<VisitData>(
-          context,
-          listen: false,
-        ).addAppVisit(_controller.text);
         _controller.clear();
       });
     }

@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Holy Shield'),
     );
   }
 }
@@ -60,10 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // List of pages for each tab (Profile page removed)
   static final List<Widget> _pages = <Widget>[
-    BlockedWebsitesPage(),
-    BlockedAppsPage(), // Add this line
-    StrictModePage(),
-    ChartPage(),
+    BlockedWebsitesPage(), // Block-list tab
+    BlockedAppsPage(), // Blocked Apps tab
+    StrictModePage(), // Strict Mode tab
+    ChartPage(), // Chart tab
   ];
 
   // Handle tab selection
