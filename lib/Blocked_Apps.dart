@@ -11,6 +11,12 @@ class _BlockedAppsPageState extends State<BlockedAppsPage> {
   final TextEditingController _controller = TextEditingController();
   final List<String> _blockedApps = [];
 
+  // Switch states for blocking features
+  bool _blockYoutubeShorts = false;
+  bool _blockInstagramReels = false;
+  bool _blockFacebookReels = false;
+  bool _blockTiktokReels = false;
+
   void _addApp() {
     if (_controller.text.isNotEmpty) {
       setState(() {
@@ -39,11 +45,39 @@ class _BlockedAppsPageState extends State<BlockedAppsPage> {
             ElevatedButton(onPressed: _addApp, child: const Text('Add App')),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: _blockedApps.length,
-                itemBuilder: (context, index) {
-                  return ListTile(title: Text(_blockedApps[index]));
-                },
+              child: ListView(
+                children: [
+                  ..._blockedApps.map((app) => ListTile(title: Text(app))),
+                  const Divider(),
+                  SwitchListTile(
+                    title: const Text('Block YouTube Shorts'),
+                    value: _blockYoutubeShorts,
+                    onChanged: (val) {
+                      setState(() => _blockYoutubeShorts = val);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const Text('Block Instagram Reels'),
+                    value: _blockInstagramReels,
+                    onChanged: (val) {
+                      setState(() => _blockInstagramReels = val);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const Text('Block Facebook Reels'),
+                    value: _blockFacebookReels,
+                    onChanged: (val) {
+                      setState(() => _blockFacebookReels = val);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const Text('Block TikTok Reels'),
+                    value: _blockTiktokReels,
+                    onChanged: (val) {
+                      setState(() => _blockTiktokReels = val);
+                    },
+                  ),
+                ],
               ),
             ),
           ],

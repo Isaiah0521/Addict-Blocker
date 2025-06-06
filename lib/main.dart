@@ -8,8 +8,13 @@ import 'Blocked_Apps.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'visit_data.dart';
+import 'package:flame_audio/flame_audio.dart';
+import 'AudioSystem.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlameAudio.bgm.initialize();
+  FlameAudio.bgm.play('song1.mp3', volume: 0.5);
   runApp(
     ChangeNotifierProvider(create: (_) => VisitData(), child: const MyApp()),
   );
@@ -56,7 +61,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0; // Track which tab is selected
+  int _selectedIndex = 0;
+  bool _musicOn = true;
 
   // List of pages for each tab (Profile page removed)
   static final List<Widget> _pages = <Widget>[
@@ -73,12 +79,33 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _toggleMusic() {
+    setState(() {
+      _musicOn = !_musicOn;
+      if (_musicOn) {
+        FlameAudio.bgm.play('song1-temp.mp3', volume: 0.5);
+      } else {
+        FlameAudio.bgm.stop();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.music_note,
+              color: _musicOn ? Colors.green : Colors.red,
+            ),
+            tooltip: _musicOn ? 'Turn music off' : 'Turn music on',
+            onPressed: _toggleMusic,
+          ),
+        ],
       ),
       body: Stack(
         children: [
