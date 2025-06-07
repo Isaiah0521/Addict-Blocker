@@ -10,11 +10,12 @@ import 'package:provider/provider.dart';
 import 'visit_data.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'AudioSystem.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlameAudio.bgm.initialize();
-  FlameAudio.bgm.play('song1.mp3', volume: 0.5);
+  FlameAudio.bgm.play('song1-temp.mp3', volume: 0.5);
   runApp(
     ChangeNotifierProvider(create: (_) => VisitData(), child: const MyApp()),
   );
@@ -143,9 +144,9 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.block),
             label: 'Blocked Apps',
-          ), // New tab
+          ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.lock_clock),
+            icon: FaIcon(FontAwesomeIcons.lock), // Angel icon here
             label: 'Strict Mode',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Chart'),

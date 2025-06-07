@@ -77,6 +77,33 @@ class ProfilePage extends StatelessWidget {
                 minimumSize: const Size.fromHeight(48),
               ),
             ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              label: const Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color.fromARGB(
+                    255,
+                    255,
+                    255,
+                    255,
+                  ), // Change this to your desired color
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 2,
+              ),
+              onPressed: () {
+                // TODO: Navigate to settings page or show settings dialog
+              },
+            ),
           ],
         ),
       ),
