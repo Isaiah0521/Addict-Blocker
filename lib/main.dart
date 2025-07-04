@@ -100,6 +100,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    const platform = MethodChannel('com.example.addict_blocker2/admin');
+    platform.setMethodCallHandler((call) async {
+      if (call.method == "showBlockedMessage") {
+        final blockedApp = call.arguments as String?;
+        if (blockedApp != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Uh oh, you cannot add this app')),
+          );
+        }
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showAdminPrompt();
     });
@@ -128,8 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     if (shouldRequest == true) {
       // Call native code to request admin access
-      const platform = MethodChannel('com.example.yourapp/admin');
-      await platform.invokeMethod('requestAdmin');
+      requestAdminAccess();
     }
   }
 
@@ -314,4 +324,9 @@ class _BlockedWebsitesPageState extends State<BlockedWebsitesPage> {
 Future<void> openAccessibilitySettings() async {
   const platform = MethodChannel('com.example.addict_blocker2/accessibility');
   await platform.invokeMethod('openAccessibilitySettings');
+}
+
+Future<void> requestAdminAccess() async {
+  const platform = MethodChannel('com.example.addict_blocker2/admin');
+  await platform.invokeMethod('requestAdmin');
 }

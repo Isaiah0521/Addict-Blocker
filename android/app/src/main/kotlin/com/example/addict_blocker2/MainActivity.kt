@@ -1,18 +1,17 @@
 package com.example.addict_blocker2
 
-import android.accessibilityservice.AccessibilityService
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings
-import android.view.accessibility.AccessibilityEvent
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "com.example.yourapp/admin"
+    private val CHANNEL = "com.example.addict_blocker2/admin"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -32,20 +31,26 @@ class MainActivity: FlutterActivity() {
                 val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
                 val componentName = ComponentName(this, MyDeviceAdminReceiver::class.java)
                 intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
-                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Needed to block websites.")
+                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Admin access is needed to block apps.")
                 startActivity(intent)
+                result.success(null)
+            } else if (call.method == "updateBlockedApps") {
+                val blockedApps = call.argument<List<String>>("blockedApps") ?: emptyList()
+                val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+                prefs.edit().putStringSet("blocked_apps", blockedApps.toSet()).apply()
                 result.success(null)
             } else {
                 result.notImplemented()
             }
         }
     }
-}
 
-class MyAccessibilityService : AccessibilityService() {
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // TODO: Add logic to monitor/block apps or websites here
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Handle intent from AccessibilityService
+        val blockedApp = intent.getStringExtra("blocked_app")
+        if (blockedApp != null) {
+            // Send message to Flutter via MethodChannel or EventChannel if needed
+        }
     }
-
-    override fun onInterrupt() {}
 }
