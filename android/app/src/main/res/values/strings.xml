@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">vpn_services</string>
+    <string name="accessibility_service_description">Holy Shield needs accessibility access to help block websites and apps.</string>
+</resources>

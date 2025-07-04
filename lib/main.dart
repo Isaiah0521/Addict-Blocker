@@ -11,7 +11,13 @@ import 'visit_data.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'AudioSystem.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/services.dart';
+import 'AppsListPage.dart';
 
+bool _blockYoutubeShorts = false;
+bool _blockInstagramReels = false;
+bool _blockFacebookReels = false;
+bool _blockTiktokReels = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlameAudio.bgm.initialize();
@@ -89,6 +95,42 @@ class _MyHomePageState extends State<MyHomePage> {
         FlameAudio.bgm.stop();
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showAdminPrompt();
+    });
+  }
+
+  void _showAdminPrompt() async {
+    final shouldRequest = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Admin Access Required'),
+            content: const Text(
+              'To block websites like YouTube, this app needs device admin access. Grant access?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('No'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+    );
+    if (shouldRequest == true) {
+      // Call native code to request admin access
+      const platform = MethodChannel('com.example.yourapp/admin');
+      await platform.invokeMethod('requestAdmin');
+    }
   }
 
   @override
@@ -225,9 +267,51 @@ class _BlockedWebsitesPageState extends State<BlockedWebsitesPage> {
                 },
               ),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AppListPage()),
+                );
+              },
+              child: const Text('App List'),
+            ),
+            SwitchListTile(
+              title: const Text('Block Instagram Reels'),
+              value: _blockInstagramReels,
+              onChanged: (val) {
+                setState(() => _blockInstagramReels = val);
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Block Facebook Reels'),
+              value: _blockFacebookReels,
+              onChanged: (val) {
+                setState(() => _blockFacebookReels = val);
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Block TikTok Reels'),
+              value: _blockTiktokReels,
+              onChanged: (val) {
+                setState(() => _blockTiktokReels = val);
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Block YouTube Shorts'),
+              value: _blockYoutubeShorts,
+              onChanged: (val) {
+                setState(() => _blockYoutubeShorts = val);
+              },
+            ),
           ],
         ),
       ),
     );
   }
+}
+
+Future<void> openAccessibilitySettings() async {
+  const platform = MethodChannel('com.example.addict_blocker2/accessibility');
+  await platform.invokeMethod('openAccessibilitySettings');
 }
